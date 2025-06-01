@@ -1,0 +1,16 @@
+environment         = "production"
+resource_group_name = "rg-ubuntu-vm-prod"
+prefix              = "prod-ubuntu"
+location            = "East US"
+
+# Network configuration
+vnet_address_space      = "10.3.0.0/16"
+subnet_address_prefix   = "10.3.1.0/24"
+
+# VM configuration
+vm_size               = "Standard_B1s"  # Same size as dev
+storage_account_type  = "Standard_LRS"  # Same storage as dev
+admin_username        = "azureuser"
+
+# Project settings
+project_name = "ubuntu-vm-project" 

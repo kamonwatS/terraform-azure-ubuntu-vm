@@ -1,0 +1,16 @@
+environment         = "dev"
+resource_group_name = "rg-ubuntu-vm-dev"
+prefix              = "dev-ubuntu"
+location            = "East US"
+
+# Network configuration
+vnet_address_space      = "10.1.0.0/16"
+subnet_address_prefix   = "10.1.1.0/24"
+
+# VM configuration
+vm_size               = "Standard_B1s"  # Smaller size for dev
+storage_account_type  = "Standard_LRS"  # Cheaper storage for dev
+admin_username        = "azureuser"
+
+# Project settings
+project_name = "ubuntu-vm-project" 
