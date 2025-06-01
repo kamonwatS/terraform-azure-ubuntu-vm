@@ -1,7 +1,7 @@
 environment         = "uat"
 resource_group_name = "rg-ubuntu-vm-uat"
 prefix              = "uat-ubuntu"
-location            = "East US"
+location            = "Southeast Asia"
 
 # Network configuration
 vnet_address_space      = "10.2.0.0/16"

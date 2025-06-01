@@ -1,7 +1,7 @@
 environment         = "dev"
 resource_group_name = "rg-ubuntu-vm-dev"
 prefix              = "dev-ubuntu"
-location            = "East US"
+location            = "Southeast Asia"
 
 # Network configuration
 vnet_address_space      = "10.1.0.0/16"

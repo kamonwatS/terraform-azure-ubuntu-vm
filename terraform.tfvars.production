@@ -1,7 +1,7 @@
 environment         = "production"
 resource_group_name = "rg-ubuntu-vm-prod"
 prefix              = "prod-ubuntu"
-location            = "East US"
+location            = "Southeast Asia"
 
 # Network configuration
 vnet_address_space      = "10.3.0.0/16"

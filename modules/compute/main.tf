@@ -37,13 +37,18 @@ resource "azurerm_network_interface_security_group_association" "main" {
   network_security_group_id = var.nsg_id
 }
 
-# Create Virtual Machine
+# Create Virtual Machine with Spot Instance pricing
 resource "azurerm_linux_virtual_machine" "main" {
   name                = "${var.prefix}-vm"
   resource_group_name = var.resource_group_name
   location            = var.location
   size                = var.vm_size
   admin_username      = var.admin_username
+
+  # Spot instance configuration to comply with Azure policy
+  priority        = "Spot"
+  eviction_policy = "Deallocate"
+  max_bid_price   = -1  # Pay up to the standard price
 
   disable_password_authentication = false
   admin_password                  = random_password.vm_password.result
