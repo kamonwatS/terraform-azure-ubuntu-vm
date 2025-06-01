@@ -4,9 +4,9 @@ resource "random_password" "vm_password" {
   special = true
 }
 
-# Create Public IP
+# Create Public IP - Format: pip-<vm name or app name>-<environment>-<region>-<###>
 resource "azurerm_public_ip" "main" {
-  name                = "${var.prefix}-pip"
+  name                = "pip-${var.project_name}-${var.environment}-sea-001"
   resource_group_name = var.resource_group_name
   location            = var.location
   allocation_method   = "Static"
@@ -15,9 +15,9 @@ resource "azurerm_public_ip" "main" {
   tags = var.tags
 }
 
-# Create Network Interface
+# Create Network Interface - Format: nic-<##>-<vm name>-<subscription purpose>-<###>
 resource "azurerm_network_interface" "main" {
-  name                = "${var.prefix}-nic"
+  name                = "nic-01-vm${var.project_name}-${var.environment}-001"
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -37,9 +37,9 @@ resource "azurerm_network_interface_security_group_association" "main" {
   network_security_group_id = var.nsg_id
 }
 
-# Create Virtual Machine with Spot Instance pricing
+# Create Virtual Machine with Spot Instance pricing - Format: vm-<workload>-<environment>-<###>
 resource "azurerm_linux_virtual_machine" "main" {
-  name                = "${var.prefix}-vm"
+  name                = "vm-${var.project_name}-${var.environment}-001"
   resource_group_name = var.resource_group_name
   location            = var.location
   size                = var.vm_size

@@ -32,15 +32,27 @@ variable "vnet_address_space" {
 }
 
 variable "subnet_address_prefix" {
-  description = "Address prefix for subnet"
+  description = "Address prefix for VM subnet"
   type        = string
-  default     = "10.0.1.0/24"
+  default     = "10.1.1.0/24"
+}
+
+variable "app_service_subnet_address_prefix" {
+  description = "Address prefix for App Service VNet integration subnet"
+  type        = string
+  default     = "10.1.2.0/24"
+}
+
+variable "private_endpoint_subnet_address_prefix" {
+  description = "Address prefix for private endpoint subnet"
+  type        = string
+  default     = "10.3.3.0/24"
 }
 
 variable "vm_size" {
   description = "Size of the virtual machine"
   type        = string
-  default     = "Standard_B2s"
+  default     = "Standard_B1s"
 }
 
 variable "admin_username" {

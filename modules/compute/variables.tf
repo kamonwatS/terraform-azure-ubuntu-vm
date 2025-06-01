@@ -3,6 +3,16 @@ variable "prefix" {
   type        = string
 }
 
+variable "project_name" {
+  description = "Name of the project for naming convention"
+  type        = string
+}
+
+variable "environment" {
+  description = "Environment name (dev, uat, production)"
+  type        = string
+}
+
 variable "location" {
   description = "Azure region"
   type        = string

@@ -32,4 +32,9 @@ output "admin_password" {
 output "vm_size" {
   description = "Size of the virtual machine"
   value       = azurerm_linux_virtual_machine.main.size
+}
+
+output "ssh_connection_command" {
+  description = "SSH command to connect to the VM"
+  value       = "ssh ${azurerm_linux_virtual_machine.main.admin_username}@${azurerm_public_ip.main.ip_address}"
 } 

@@ -1,296 +1,367 @@
-# Azure Ubuntu VM Terraform Project (Modular)
+# 🚀 Terraform Azure Ubuntu VM Infrastructure
 
-This Terraform project provisions Azure Ubuntu VMs for three environments: **dev**, **uat**, and **production** using a modular architecture.
+A production-ready, modular Terraform project for deploying Ubuntu 22.04 LTS virtual machines on Azure with support for multiple environments (dev, UAT, production).
 
-## 🏗️ Modular Architecture
-
-The project is organized into reusable modules:
-
-### 📁 Project Structure
+## 🏗️ **Improved Directory Structure**
 
 ```
-.
-├── main.tf                      # Root module calling child modules
-├── variables.tf                 # Root variables
-├── outputs.tf                   # Root outputs
-├── versions.tf                  # Provider requirements
-├── modules/
-│   ├── network/
-│   │   ├── main.tf             # VNet, subnet, NSG
-│   │   ├── variables.tf        # Network variables
-│   │   └── outputs.tf          # Network outputs
-│   ├── compute/
-│   │   ├── main.tf             # VM, NIC, public IP
-│   │   ├── variables.tf        # Compute variables
-│   │   └── outputs.tf          # Compute outputs
-│   └── storage/
-│       ├── main.tf             # Storage account
-│       ├── variables.tf        # Storage variables
-│       └── outputs.tf          # Storage outputs
-├── terraform.tfvars.dev        # Development environment
-├── terraform.tfvars.uat        # UAT environment
-├── terraform.tfvars.production # Production environment
-├── deploy-dev.sh               # Development deployment script
-├── deploy-uat.sh               # UAT deployment script
-├── deploy-production.sh        # Production deployment script
-└── destroy.sh                  # Resource cleanup script
+terraform-azure-ubuntu-vm/
+├── README.md                    # This file
+├── Makefile                     # Task automation
+├── .gitignore                   # Git ignore rules
+│
+├── environments/                # 🌍 Environment-specific configurations
+│   ├── dev/                    # Development environment
+│   │   ├── main.tf             # Environment main configuration
+│   │   ├── variables.tf        # Environment variables
+│   │   ├── outputs.tf          # Environment outputs
+│   │   ├── terraform.tfvars    # Environment values
+│   │   └── backend.tf          # Remote state configuration
+│   ├── uat/                    # UAT environment
+│   └── production/             # Production environment
+│
+├── modules/                     # 🧩 Reusable Terraform modules
+│   ├── compute/                # VM and related resources
+│   ├── network/                # VNet, subnets, NSG
+│   ├── storage/                # Storage accounts
+│   └── vm-infrastructure/      # Combined infrastructure module
+│
+├── scripts/                     # 🔧 Automation scripts
+│   ├── deploy.sh               # Universal deployment script
+│   ├── destroy.sh              # Universal destroy script
+│   ├── terraform.sh            # 🆕 Unified Terraform management script
+│   ├── validate.sh             # Validation script
+│   └── helpers/                # Helper scripts
+│
+├── docs/                       # 📚 Documentation
+│   ├── DEPLOYMENT.md          # Detailed deployment guide
+│   ├── ARCHITECTURE.md        # Architecture overview
+│   └── diagrams/              # Architecture diagrams
+│
+├── configs/                    # ⚙️ Shared configurations
+├── tests/                      # 🧪 Testing framework
+└── tools/                      # 🛠️ Utility tools
 ```
 
-## 🔧 Module Details
+## 🚀 **Quick Start**
 
-### Network Module (`modules/network/`)
-- **Virtual Network (VNet)**: Network foundation with environment-specific address spaces
-- **Subnet**: Isolated network segment within the VNet
-- **Network Security Group (NSG)**: Firewall rules for SSH, HTTP, and HTTPS
+### **Method 1: Using Makefile (Recommended)**
 
-### Compute Module (`modules/compute/`)
-- **Public IP**: Static public IP address for external access
-- **Network Interface**: Connects VM to the network
-- **Linux Virtual Machine**: Ubuntu 22.04 LTS with environment-appropriate sizing
-- **Random Password**: Auto-generated secure password
+```bash
+# Show all available commands
+make help
 
-### Storage Module (`modules/storage/`)
-- **Storage Account**: For boot diagnostics
+# Deploy to development
+make dev
 
-## 📋 Prerequisites
+# Deploy to UAT
+make uat
+
+# Deploy to production (with extra confirmations)
+make prod
+
+# Destroy environments
+make destroy-dev
+make destroy-uat
+make destroy-prod
+```
+
+### **Method 2: Using Universal Scripts**
+
+```bash
+# Deploy to any environment
+./scripts/deploy.sh <environment>
+
+# Examples:
+./scripts/deploy.sh dev
+./scripts/deploy.sh uat
+./scripts/deploy.sh production
+
+# Destroy any environment
+./scripts/destroy.sh <environment>
+```
+
+### **Method 3: Using Unified Terraform Script (New!)**
+
+```bash
+# Single script for all operations
+./scripts/terraform.sh <action> <environment>
+
+# Deploy examples:
+./scripts/terraform.sh deploy dev
+./scripts/terraform.sh deploy uat
+./scripts/terraform.sh deploy production
+
+# Other operations:
+./scripts/terraform.sh destroy dev
+./scripts/terraform.sh status uat
+./scripts/terraform.sh plan production
+./scripts/terraform.sh validate dev
+./scripts/terraform.sh output prod
+```
+
+### **Method 4: Manual Deployment**
+
+```bash
+# Navigate to specific environment
+cd environments/dev
+
+# Initialize and deploy
+terraform init
+terraform plan -out=tfplan
+terraform apply tfplan
+```
+
+## 🌍 **Environment Configurations**
+
+All environments use consistent, cost-optimized settings:
+
+| Environment | VM Size | vCPU | RAM | Network | Monthly Cost* |
+|-------------|---------|------|-----|---------|---------------|
+| **Dev** | Standard_B2as_v2 | 2 | 4GB | 10.1.0.0/16 | ~$35-40 |
+| **UAT** | Standard_B2as_v2 | 2 | 4GB | 10.2.0.0/16 | ~$35-40 |
+| **Prod** | Standard_B2as_v2 | 2 | 4GB | 10.3.0.0/16 | ~$35-40 |
+
+*\*With Spot pricing enabled for maximum cost savings*
+
+## 📋 **Prerequisites**
 
 1. **Azure CLI** installed and authenticated
-2. **Terraform** installed (version >= 1.0)
-3. **Azure subscription** with appropriate permissions
-4. **SSH key pair** (optional, password authentication is enabled by default)
+2. **Terraform** >= 1.0 installed  
+3. **Make** utility (for Makefile commands)
+4. **Azure subscription** with appropriate permissions
 
-### Azure Authentication
+### **Setup Azure Authentication**
 
 ```bash
 # Login to Azure
 az login
 
-# Set your subscription (if you have multiple)
+# Set subscription (if multiple)
 az account set --subscription "your-subscription-id"
+
+# Verify authentication
+az account show
 ```
 
-## 🚀 Quick Start
+## 🎯 **Key Features**
 
-### 1. Clone and Initialize
+### **🏗️ Modular Architecture**
+- **Reusable modules** for compute, network, and storage
+- **Environment isolation** with separate state files
+- **Standardized configurations** across all environments
 
+### **🔒 Security & Compliance**
+- **Spot instances** for cost optimization
+- **Network Security Groups** with SSH, HTTP, HTTPS rules
+- **Auto-generated secure passwords**
+- **Production deployment safeguards**
+
+### **🛠️ Automation & DevOps**
+- **Universal deployment scripts** with colored output
+- **Makefile** for common tasks
+- **Environment validation** and error handling
+- **Clean destruction** with confirmation prompts
+
+### **📊 Cost Optimization**
+- **Azure Spot VMs** (up to 90% savings)
+- **Standard LRS storage** for cost efficiency
+- **Right-sized instances** for each environment
+- **Built-in cost estimation** placeholders
+
+## 🚀 **Deployment Examples**
+
+### **Development Deployment**
 ```bash
-# Navigate to the project directory
-cd terraform
+# Quick deployment
+make dev
 
-# Initialize Terraform (downloads modules and providers)
-terraform init
+# Check status
+make status-dev
+
+# Get VM details
+cd environments/dev && terraform output
 ```
 
-### 2. Deploy to Development
-
+### **Production Deployment**
 ```bash
-# Deploy to dev environment
-./deploy-dev.sh
+# Deploy with safety checks
+make prod
+# Requires typing 'PRODUCTION' to confirm
+
+# Verify deployment
+make status-prod
 ```
 
-### 3. Deploy to UAT
-
+### **Multi-Environment Management**
 ```bash
-# Deploy to UAT environment
-./deploy-uat.sh
+# Deploy all environments
+make dev && make uat && make prod
+
+# Clean up temporary files
+make clean
+
+# Format all code
+make format
 ```
 
-### 4. Deploy to Production
+## 🔧 **Common Tasks**
 
+### **Get VM Access Information**
 ```bash
-# Deploy to production environment (requires additional confirmation)
-./deploy-production.sh
-```
+# Navigate to environment
+cd environments/dev
 
-## 🔧 Manual Deployment
-
-If you prefer manual deployment:
-
-```bash
-# Plan deployment for specific environment
-terraform plan -var-file="terraform.tfvars.dev" -out="tfplan-dev"
-
-# Apply the plan
-terraform apply "tfplan-dev"
-
-# View outputs
-terraform output
-```
-
-## 🌍 Environment Configurations
-
-All environments now use uniform specifications for cost optimization:
-
-### Development (dev)
-- **VM Size**: Standard_B1s (1 vCPU, 1GB RAM)
-- **Storage**: Standard_LRS
-- **Network**: 10.1.0.0/16
-- **Cost**: ~$15-20/month
-
-### UAT (uat)
-- **VM Size**: Standard_B1s (1 vCPU, 1GB RAM)
-- **Storage**: Standard_LRS
-- **Network**: 10.2.0.0/16
-- **Cost**: ~$15-20/month
-
-### Production (production)
-- **VM Size**: Standard_B1s (1 vCPU, 1GB RAM)
-- **Storage**: Standard_LRS
-- **Network**: 10.3.0.0/16
-- **Cost**: ~$15-20/month
-
-## 🔐 Access Your VM
-
-After deployment, get the connection details:
-
-```bash
-# View all outputs
-terraform output
-
-# Get the SSH connection command
+# Get SSH command
 terraform output ssh_connection_command
 
-# Get the VM password (sensitive output)
+# Get password
 terraform output -raw admin_password
+
+# Example: ssh azureuser@<public-ip>
 ```
 
-### SSH Connection
+### **Update Infrastructure**
+```bash
+# Modify configuration
+nano environments/dev/terraform.tfvars
+
+# Apply changes
+make dev
+```
+
+### **Validate Configuration**
+```bash
+# Validate all environments
+make validate
+
+# Format code
+make format
+
+# Initialize all environments
+make init-all
+```
+
+## 💡 **Advanced Usage**
+
+### **Remote State Management**
+
+Each environment has backend configuration files for remote state:
 
 ```bash
-# Replace with your actual IP and password
-ssh azureuser@<public-ip-address>
+# Enable remote state (example for dev)
+cd environments/dev
+# Edit backend.tf and uncomment the azurerm backend
+terraform init -migrate-state
 ```
 
-## 🧹 Cleanup
-
-To destroy resources for any environment:
+### **Adding New Environments**
 
 ```bash
-# Destroy dev environment
-./destroy.sh dev
+# Create new environment
+mkdir environments/staging
+cp environments/dev/* environments/staging/
 
-# Destroy UAT environment
-./destroy.sh uat
+# Update configuration
+nano environments/staging/terraform.tfvars
 
-# Destroy production environment (requires additional confirmation)
-./destroy.sh production
+# Add to Makefile
+# staging:
+#     @scripts/deploy.sh staging
 ```
 
-## 🔒 Security Features
-
-- **Network Security Groups**: Configured with rules for SSH (22), HTTP (80), and HTTPS (443)
-- **Strong Passwords**: Auto-generated 16-character passwords with special characters
-- **Environment Isolation**: Separate VNets and resource groups per environment
-- **Production Safeguards**: Additional confirmation prompts for production deployments
-- **Modular Security**: Security rules centralized in network module
-
-## 🎛️ Customization
-
-### Modify VM Sizes
-
-Edit the respective `terraform.tfvars.*` files:
-
-```hcl
-vm_size = "Standard_D4s_v3"  # Example: 4 vCPU, 16GB RAM
-```
-
-### Change Regions
-
-Update the location in variable files:
-
-```hcl
-location = "West US 2"
-```
-
-### Adjust Network Configuration
-
-Modify network settings in variable files:
-
-```hcl
-vnet_address_space    = "10.4.0.0/16"
-subnet_address_prefix = "10.4.1.0/24"
-```
-
-### Module Customization
-
-You can modify individual modules without affecting others:
-
-- **Network changes**: Edit `modules/network/main.tf`
-- **VM specifications**: Edit `modules/compute/main.tf`
-- **Storage settings**: Edit `modules/storage/main.tf`
-
-## 📊 Outputs
-
-After deployment, you'll see these outputs:
-
-- `resource_group_name`: Name of the created resource group
-- `virtual_machine_name`: Name of the virtual machine
-- `public_ip_address`: Public IP for external access
-- `private_ip_address`: Private IP within the VNet
-- `admin_username`: VM administrator username
-- `admin_password`: VM administrator password (sensitive)
-- `ssh_connection_command`: Ready-to-use SSH command
-- `vm_size`: Configured VM size
-- `environment`: Environment name
-- `vnet_name`: Virtual network name
-- `storage_account_name`: Storage account name
-
-## 🚀 Module Benefits
-
-### Advantages of Modular Approach:
-
-1. **Reusability**: Modules can be reused across projects
-2. **Maintainability**: Update modules independently
-3. **Testing**: Test individual components in isolation
-4. **Collaboration**: Teams can work on different modules
-5. **Standardization**: Consistent infrastructure patterns
-6. **Composition**: Mix and match modules as needed
-
-### Module Dependencies:
-
-```
-Storage Module (independent)
-    ↑
-Network Module (independent)
-    ↑
-Compute Module (depends on Network)
-```
-
-## 🔄 Working with Modules
-
-### Initialize After Changes
-
-After modifying modules, run:
+### **Module Development**
 
 ```bash
-terraform init -upgrade
+# Modify modules
+nano modules/compute/main.tf
+
+# Test in development first
+make dev
+
+# Apply to other environments
+make uat && make prod
 ```
 
-### Validate Module Structure
+## 🛠️ **Troubleshooting**
+
+### **Common Issues**
+
+1. **"Environment not found"**: Run from project root directory
+2. **"VM size not available"**: Check region availability or change VM size
+3. **"Authentication failed"**: Verify `az login` and subscription access
+4. **"State locked"**: Wait for other operations to complete
+
+### **Getting Help**
 
 ```bash
-terraform validate
+# Show make commands
+make help
+
+# Validate configurations
+make validate
+
+# Check Azure login
+az account show
 ```
 
-### Format Code
+## 📚 **Documentation**
+
+- 📖 **[Deployment Guide](docs/DEPLOYMENT.md)** - Comprehensive deployment instructions
+- 🏗️ **[Architecture Guide](docs/ARCHITECTURE.md)** - System architecture overview  
+- 🔧 **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+
+## 🧪 **Testing**
 
 ```bash
-terraform fmt -recursive
+# Run validation
+make validate
+
+# Test deployment in dev
+make dev
+
+# Verify outputs
+make status-dev
+
+# Clean up
+make destroy-dev
 ```
 
-## 🚨 Important Notes
+## 🔐 **Security Notes**
 
-1. **Costs**: All environments now use cost-optimized settings (~$15-20/month each)
-2. **Security**: Change default passwords and consider using SSH keys for production
-3. **Backups**: Set up automated backups for production VMs
-4. **Updates**: Keep Ubuntu and applications updated
-5. **Monitoring**: Consider setting up Azure Monitor for production workloads
-6. **Module Versions**: Consider versioning modules for production use
+- **Production requires double confirmation**
+- **Auto-generated passwords** (16 characters with special chars)
+- **Network security groups** configured with minimal required access
+- **Consider Azure Key Vault** for production secrets
+- **Enable Azure Security Center** for enhanced monitoring
 
-## 🤝 Contributing
+## 💰 **Cost Management**
 
-Feel free to submit issues and enhancement requests!
+- **Spot pricing enabled** (up to 90% savings)
+- **Standard LRS storage** for cost efficiency
+- **Monitor usage** with Azure Cost Management
+- **Set up budget alerts** for cost control
 
-## 📄 License
+## 🚀 **Next Steps**
 
-This project is licensed under the MIT License. 
+1. **Set up remote state** for production environments
+2. **Implement CI/CD pipelines** for automated deployments
+3. **Add monitoring and alerting** with Azure Monitor
+4. **Configure automated backups** for production VMs
+5. **Implement security scanning** with tools like tfsec
+
+## 🤝 **Contributing**
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test in development environment
+5. Submit a pull request
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+**🎉 Happy Terraforming!** For questions or support, please refer to the documentation in the `docs/` directory or open an issue. 
