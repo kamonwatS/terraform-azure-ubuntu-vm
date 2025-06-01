@@ -1,0 +1,331 @@
+# Cursor Rules for Azure Infrastructure as Code Projects
+# Project Template: Enterprise-Grade Terraform Infrastructure
+# Based on: kai123 project - Microsoft Azure Cloud Adoption Framework
+
+## Core Project Principles
+
+### 1. Infrastructure as Code Standards
+- Use Terraform for all Azure infrastructure provisioning
+- Follow semantic versioning for Terraform providers
+- Implement modular architecture with reusable components
+- Separate environments (dev/uat/production) with dedicated configurations
+- Use .tfvars files for environment-specific values
+- Never hardcode sensitive values - use variables and secure methods
+
+### 2. Microsoft Azure Cloud Adoption Framework Compliance
+- **ALWAYS** follow Microsoft Azure naming conventions: https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-naming
+- **Resource Groups**: `rg-<project>-<environment>-<###>`
+- **Virtual Machines**: `vm-<project>-<environment>-<###>`
+- **Virtual Networks**: `vnet-<project>-<region>-<###>`
+- **Subnets**: `snet-<project>-<purpose>-<region>-<###>`
+- **Storage Accounts**: `st<project><environment><###>` (no hyphens, lowercase)
+- **App Services**: `app-<project>-<environment>-<###>`
+- **Network Security Groups**: `nsg-<project>-<policy>-<###>`
+- **Public IPs**: `pip-<project>-<environment>-<region>-<###>`
+- **Network Interfaces**: `nic-<##>-<vm><project>-<environment>-<###>`
+- **Private Endpoints**: `pe-<service>-<project>-<environment>-<###>`
+- Use standard Azure region abbreviations (e.g., "sea" for Southeast Asia)
+
+### 3. Documentation Requirements
+- **MANDATORY**: Add comprehensive comments to ALL Terraform files
+- Include purpose, security considerations, and design decisions
+- Use structured comment blocks with clear sections
+- Create visual ASCII architecture diagrams
+- Document cost optimization strategies
+- Explain security configurations and access patterns
+- Include future roadmap and enhancement possibilities
+
+## File Structure Standards
+
+### Directory Organization
+```
+project-root/
+├── .cursorrules              # This file
+├── .gitignore               # Terraform-specific ignores
+├── README.md                # Project overview and quick start
+├── Makefile                 # Common operations automation
+├── docs/
+│   ├── ARCHITECTURE.md      # Comprehensive architecture documentation
+│   ├── DEPLOYMENT.md        # Deployment procedures
+│   └── CLEANUP_SUMMARY.md   # Maintenance procedures
+├── environments/
+│   ├── dev/
+│   │   ├── main.tf          # Environment-specific main configuration
+│   │   ├── variables.tf     # Variable definitions with descriptions
+│   │   ├── terraform.tfvars # Environment values
+│   │   ├── outputs.tf       # Output definitions
+│   │   └── backend.tf       # Backend configuration
+│   ├── uat/                 # Same structure as dev
+│   └── production/          # Same structure as dev
+├── modules/
+│   ├── network/             # VNet, subnets, NSG, private DNS
+│   ├── compute/             # VMs, NICs, public IPs
+│   ├── storage/             # Storage accounts
+│   └── app-service/         # App Services with private connectivity
+└── scripts/
+    ├── deploy.sh            # Deployment automation
+    ├── destroy.sh           # Resource cleanup
+    └── terraform.sh         # Terraform wrapper
+```
+
+### Required Files in Each Module
+- `main.tf` - Primary resource definitions with comprehensive comments
+- `variables.tf` - Input variables with detailed descriptions
+- `outputs.tf` - Output values for module integration
+- Each file must start with a comprehensive header comment block
+
+## Comment Standards
+
+### File Header Template
+```hcl
+#================================================
+# [Module Name] - [Brief Description]
+# Purpose: [Detailed explanation of module purpose]
+# Features: [Key features and capabilities]
+# Security: [Security considerations and configurations]
+# Naming Convention: Microsoft Azure Cloud Adoption Framework
+#================================================
+```
+
+### Resource Comment Template
+```hcl
+#================================================
+# [Resource Type] - [Resource Purpose]
+# Purpose: [Detailed explanation]
+# Naming: [Naming pattern and example]
+# Example: [Actual resource name example]
+# 
+# Configuration Details:
+# - [Key configuration point 1]
+# - [Key configuration point 2]
+# - [Security considerations]
+# 
+# Dependencies: [List dependencies]
+# Benefits: [List benefits and design decisions]
+#================================================
+```
+
+### Inline Comment Standards
+- Explain **WHY** not just **WHAT**
+- Include security implications
+- Document cost optimization decisions
+- Explain environment-specific variations
+- Reference Azure best practices where applicable
+
+## Security Standards
+
+### Network Security Requirements
+- Implement network segmentation with dedicated subnets
+- Use Network Security Groups with principle of least privilege
+- Implement private endpoints for PaaS services
+- Disable public access by default for sensitive services
+- Document all firewall rules with business justification
+
+### Access Control Standards
+- Use Azure-managed identities where possible
+- Implement password complexity requirements
+- Document authentication methods and security trade-offs
+- Plan for SSH key rotation in production
+- Restrict source IP ranges for administrative access
+
+### Data Protection Requirements
+- Use appropriate storage replication for environment
+- Implement encryption in transit and at rest
+- Use private connectivity for data access
+- Document data residency and compliance requirements
+
+## Cost Optimization Standards
+
+### Environment-Specific Optimizations
+- **Development**: Use Spot instances, Standard storage, Basic service tiers
+- **UAT**: Balance cost and performance for testing scenarios
+- **Production**: Optimize for performance and availability
+
+### Required Cost Documentation
+- Document VM sizing decisions
+- Explain storage tier selections
+- Include monthly cost estimates
+- Plan for auto-scaling where appropriate
+
+## Variable Standards
+
+### Variable Documentation Requirements
+```hcl
+variable "example_variable" {
+  description = "[Detailed description] - [usage context] - [environment considerations]"
+  type        = string
+  default     = "default_value"    # [Explanation of default choice]
+  
+  validation {
+    condition     = [validation_logic]
+    error_message = "[Clear error message]"
+  }
+}
+```
+
+### Environment Variable Patterns
+- Use consistent variable names across environments
+- Include environment-specific defaults
+- Document security implications of variable choices
+- Use validation blocks for critical variables
+
+## Module Development Standards
+
+### Module Interface Requirements
+- Accept project_name and environment as standard inputs
+- Use consistent variable patterns across modules
+- Provide meaningful outputs for module integration
+- Include dependency management
+
+### Module Documentation Requirements
+- Document module purpose and use cases
+- Include usage examples
+- List all dependencies
+- Document security implications
+- Include cost considerations
+
+## Architecture Standards
+
+### Network Architecture Requirements
+- Use hub-spoke or segmented network designs
+- Plan IP address spaces for all environments
+- Implement private connectivity for PaaS services
+- Use consistent subnetting patterns
+
+### Compute Architecture Requirements
+- Use appropriate VM sizes for workload requirements
+- Implement cost optimization strategies
+- Plan for high availability where needed
+- Document performance characteristics
+
+### Security Architecture Requirements
+- Implement defense in depth
+- Use private endpoints for PaaS services
+- Implement proper network segmentation
+- Document security boundaries and controls
+
+## Terraform Best Practices
+
+### Code Quality Standards
+- Use consistent formatting (terraform fmt)
+- Validate configurations (terraform validate)
+- Use semantic versioning for modules
+- Implement proper state management
+
+### Resource Organization
+- Group related resources logically
+- Use consistent resource naming
+- Implement proper dependency management
+- Use data sources for existing resources
+
+### State Management
+- Use remote state for team collaboration
+- Implement state locking
+- Plan for state backup and recovery
+- Document state management procedures
+
+## Documentation Requirements
+
+### Architecture Documentation
+- Include visual diagrams (ASCII preferred)
+- Document all components and their interactions
+- Explain security architecture
+- Include cost optimization strategies
+- Document future roadmap
+
+### Deployment Documentation
+- Provide step-by-step deployment procedures
+- Include prerequisite requirements
+- Document troubleshooting procedures
+- Include rollback procedures
+
+### Maintenance Documentation
+- Document backup and recovery procedures
+- Include monitoring and alerting setup
+- Document update procedures
+- Include security maintenance tasks
+
+## Error Handling and Validation
+
+### Input Validation
+- Validate all user inputs
+- Provide clear error messages
+- Document validation logic
+- Test edge cases
+
+### Resource Dependencies
+- Explicitly define resource dependencies
+- Handle resource creation order
+- Plan for resource deletion order
+- Document dependency relationships
+
+## Testing Standards
+
+### Validation Requirements
+- Test all Terraform configurations
+- Validate against Azure policies
+- Test deployment procedures
+- Validate security configurations
+
+### Environment Testing
+- Test in development environment first
+- Validate environment-specific configurations
+- Test disaster recovery procedures
+- Validate monitoring and alerting
+
+## Deployment Standards
+
+### Automation Requirements
+- Use scripts for common operations
+- Implement CI/CD where appropriate
+- Document manual procedures
+- Plan for rollback scenarios
+
+### Change Management
+- Use version control for all changes
+- Document change procedures
+- Implement approval processes for production
+- Plan for emergency changes
+
+## Monitoring and Observability
+
+### Logging Requirements
+- Implement comprehensive logging
+- Use Azure Monitor where appropriate
+- Document log retention policies
+- Plan for log analysis
+
+### Alerting Requirements
+- Implement proactive monitoring
+- Define clear alert criteria
+- Document incident response procedures
+- Plan for alert escalation
+
+## When Creating New Projects:
+
+1. **ALWAYS** start with project naming following Azure conventions
+2. **ALWAYS** create modular structure with environments
+3. **ALWAYS** implement security-first design
+4. **ALWAYS** include comprehensive documentation
+5. **ALWAYS** add detailed comments explaining decisions
+6. **ALWAYS** consider cost optimization
+7. **ALWAYS** plan for scalability and maintenance
+8. **ALWAYS** validate against Azure best practices
+9. **ALWAYS** include architecture diagrams
+10. **ALWAYS** document future roadmap
+
+## Code Generation Instructions:
+
+When asked to create infrastructure templates:
+1. Ask for project name and ensure it follows naming conventions
+2. Create complete modular structure
+3. Include all required documentation
+4. Add comprehensive comments to all files
+5. Implement security best practices
+6. Include cost optimization strategies
+7. Create environment-specific configurations
+8. Include deployment automation
+9. Add monitoring and observability planning
+10. Provide maintenance documentation
+
+Remember: Quality over speed. Create enterprise-grade, maintainable, and well-documented infrastructure that follows Microsoft Azure best practices. 
